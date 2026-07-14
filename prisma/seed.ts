@@ -14,7 +14,7 @@ async function main() {
       name: 'Alice Cyber',
       passwordHash,
       role: 'STUDENT',
-      registerNumber: 'CYB2023001',
+      registerNumber: 'CB.SC.U4CYS24001',
       department: 'Cyber Security',
       year: '3rd Year',
       section: 'A'
@@ -22,11 +22,11 @@ async function main() {
   })
 
   const faculty = await prisma.user.upsert({
-    where: { email: 'faculty@college.edu' },
+    where: { email: 'uma@amrita.edu' },
     update: {},
     create: {
       email: 'faculty@college.edu',
-      name: 'Dr. Smith',
+      name: 'Dr. Uma Maheshwari',
       passwordHash,
       role: 'FACULTY',
       department: 'Cyber Security'
@@ -38,7 +38,7 @@ async function main() {
     update: {},
     create: {
       email: 'm_sethu@cb.amrita.edu',
-      name: 'M Sethu',
+      name: 'M Sethumadhavan',
       passwordHash,
       role: 'ADMIN',
       department: 'Admin'
