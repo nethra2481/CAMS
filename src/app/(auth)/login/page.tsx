@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Terminal } from "lucide-react";
+import { Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Terminal, ArrowLeft } from "lucide-react";
 
 const LOG_LINES = [
   { type: "ok",   text: "[+] TLS 1.3 handshake complete" },
@@ -72,11 +72,21 @@ export default function LoginPage() {
       setError("Invalid email or password.");
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      router.push(role === "faculty" ? "/faculty" : "/student");
     }
   };
 
-  const logColor = (t: string) => t === "ok" ? "text-[#c0392b]" : t === "warn" ? "text-amber-500" : "text-[#a85050]";
+  // Color theme definitions based on role
+  const isFaculty = role === "faculty";
+  const primaryColor = isFaculty ? "#0ea5e9" : "#c0392b"; // cyan vs crimson
+  const primaryDark = isFaculty ? "#0284c7" : "#9b2020";
+  const primaryDarkest = isFaculty ? "#0369a1" : "#6b0f0f";
+  const primaryMuted = isFaculty ? "#38bdf8" : "#a85050";
+  const primaryHighlight = isFaculty ? "#7dd3fc" : "#e05a4a";
+
+  const logColor = (t: string) => t === "ok" ? `text-[${primaryColor}]` : t === "warn" ? "text-amber-500" : `text-[${primaryMuted}]`;
+
+  if (!mounted) return null;
 
   return (
     <>
@@ -99,8 +109,8 @@ export default function LoginPage() {
             0deg,
             transparent,
             transparent 2px,
-            rgba(192, 57, 43, 0.03) 2px,
-            rgba(192, 57, 43, 0.03) 4px
+            rgba(${isFaculty ? '14, 165, 233' : '192, 57, 43'}, 0.03) 2px,
+            rgba(${isFaculty ? '14, 165, 233' : '192, 57, 43'}, 0.03) 4px
           );
           pointer-events: none;
           z-index: 9999;
@@ -110,8 +120,8 @@ export default function LoginPage() {
           position: fixed;
           inset: 0;
           background-image:
-            linear-gradient(rgba(192, 57, 43, 0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(192, 57, 43, 0.04) 1px, transparent 1px);
+            linear-gradient(rgba(${isFaculty ? '14, 165, 233' : '192, 57, 43'}, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(${isFaculty ? '14, 165, 233' : '192, 57, 43'}, 0.04) 1px, transparent 1px);
           background-size: 40px 40px;
           pointer-events: none;
         }
@@ -125,7 +135,7 @@ export default function LoginPage() {
         .ambient-1 {
           width: 600px;
           height: 600px;
-          background: radial-gradient(circle, rgba(107, 15, 15, 0.35) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(${isFaculty ? '2, 132, 199' : '107, 15, 15'}, 0.35) 0%, transparent 70%);
           top: -200px;
           right: -200px;
           animation: float1 8s ease-in-out infinite;
@@ -133,7 +143,7 @@ export default function LoginPage() {
         .ambient-2 {
           width: 400px;
           height: 400px;
-          background: radial-gradient(circle, rgba(155, 32, 32, 0.2) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(${isFaculty ? '3, 105, 161' : '155, 32, 32'}, 0.2) 0%, transparent 70%);
           bottom: -100px;
           left: -100px;
           animation: float2 10s ease-in-out infinite;
@@ -149,41 +159,48 @@ export default function LoginPage() {
         }
       `}</style>
       
-      <div className="min-h-screen flex items-center justify-center scanlines font-rajdhani text-[#f0f0f0] relative overflow-hidden bg-[#0d0d0d]">
+      <div className="min-h-screen flex flex-col items-center justify-center scanlines font-rajdhani text-[#f0f0f0] relative overflow-hidden bg-[#0d0d0d]">
         <div className="grid-bg z-0" />
         <div className="ambient-glow ambient-1 z-0" />
         <div className="ambient-glow ambient-2 z-0" />
 
-        <div className="relative z-10 w-full max-w-5xl flex flex-col lg:flex-row gap-12 items-center justify-between p-6">
+        {/* ── TOP NAV / BACK BUTTON ── */}
+        <div className="absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center">
+          <Link href="/" className={`flex items-center gap-2 font-share-tech uppercase tracking-widest text-sm transition-colors text-[${primaryMuted}] hover:text-[${primaryColor}]`}>
+            <ArrowLeft className="w-4 h-4" /> Return to Base
+          </Link>
+        </div>
+
+        <div className="relative z-10 w-full max-w-5xl flex flex-col lg:flex-row gap-12 items-center justify-between p-6 mt-10 lg:mt-0">
           
           {/* ── LEFT PANEL (Branding) ── */}
           <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
             <div className="flex flex-col items-center lg:items-start gap-4">
-              <svg width="140" height="140" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_15px_rgba(192,57,43,0.6)]">
+              <svg width="140" height="140" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: `drop-shadow(0 0 15px ${primaryColor}60)` }}>
                 <defs>
                   <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#C0392B" />
-                    <stop offset="100%" stopColor="#6B0F0F" />
+                    <stop offset="0%" stopColor={primaryColor} />
+                    <stop offset="100%" stopColor={primaryDarkest} />
                   </linearGradient>
                   <linearGradient id="g2" x1="100%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#9B2020" />
+                    <stop offset="0%" stopColor={primaryDark} />
                     <stop offset="100%" stopColor="#4a0a0a" />
                   </linearGradient>
                 </defs>
                 <ellipse cx="100" cy="100" rx="90" ry="30" stroke="url(#g1)" strokeWidth="11" fill="none" transform="rotate(0 100 100)" opacity="0.9" />
                 <ellipse cx="100" cy="100" rx="90" ry="30" stroke="url(#g1)" strokeWidth="11" fill="none" transform="rotate(60 100 100)" opacity="0.85" />
                 <ellipse cx="100" cy="100" rx="90" ry="30" stroke="url(#g1)" strokeWidth="11" fill="none" transform="rotate(-60 100 100)" opacity="0.8" />
-                <polygon points="100,78 118,89 118,111 100,122 82,111 82,89" fill="url(#g2)" opacity="0.7" stroke="#9B2020" strokeWidth="2" />
+                <polygon points="100,78 118,89 118,111 100,122 82,111 82,89" fill="url(#g2)" opacity="0.7" stroke={primaryDark} strokeWidth="2" />
                 <circle cx="100" cy="100" r="16" fill="#7a1a1a" opacity="0.95" />
-                <circle cx="100" cy="100" r="10" fill="#C0392B" opacity="0.7" />
-                <circle cx="100" cy="100" r="5" fill="#e05a4a" opacity="0.9" />
+                <circle cx="100" cy="100" r="10" fill={primaryColor} opacity="0.7" />
+                <circle cx="100" cy="100" r="5" fill={primaryHighlight} opacity="0.9" />
               </svg>
 
               <div>
                 <h1 className="font-press-start text-3xl md:text-5xl tracking-widest text-[#f0f0f0] mt-4 mb-2">
-                  CAMS <span className="text-[#c0392b]">PORTAL</span>
+                  CAMS <span style={{ color: primaryColor }}>PORTAL</span>
                 </h1>
-                <p className="font-share-tech text-[#a85050] tracking-[0.3em] text-sm uppercase">Amrita TIFAC-CORE · {new Date().getFullYear()}</p>
+                <p className="font-share-tech tracking-[0.3em] text-sm uppercase" style={{ color: primaryMuted }}>Amrita TIFAC-CORE · {new Date().getFullYear()}</p>
               </div>
             </div>
 
@@ -191,20 +208,20 @@ export default function LoginPage() {
               Log your hackathons, CTFs, certifications and research. Prove your skills and build your placement-ready portfolio.
             </p>
 
-            <div className="w-full max-w-sm border border-[#c0392b]/30 bg-[#141414]/80 backdrop-blur-sm p-4 relative">
-              <div className="absolute top-0 left-0 w-2 h-full bg-[#c0392b]" />
-              <div className="flex items-center gap-2 mb-2 text-[#c0392b] font-share-tech text-xs uppercase tracking-widest">
+            <div className="w-full max-w-sm border bg-[#141414]/80 backdrop-blur-sm p-4 relative" style={{ borderColor: `${primaryColor}4d` }}>
+              <div className="absolute top-0 left-0 w-2 h-full" style={{ backgroundColor: primaryColor }} />
+              <div className="flex items-center gap-2 mb-2 font-share-tech text-xs uppercase tracking-widest" style={{ color: primaryColor }}>
                 <Terminal className="w-4 h-4" /> root@cams-soc:~#
               </div>
               <div ref={termRef} className="font-share-tech text-xs space-y-1 h-20 overflow-hidden text-[#8a8a8a]">
                 {termLines.map((line, i) => (
-                  <div key={i} className={`flex items-start gap-2 ${logColor(line.type)}`}>
-                    <span>{line.text}</span>
+                  <div key={i} className="flex items-start gap-2">
+                    <span style={{ color: line.type === 'ok' ? primaryColor : line.type === 'warn' ? '#f59e0b' : primaryMuted }}>{line.text}</span>
                   </div>
                 ))}
-                <div className="flex items-center gap-1 text-[#c0392b]">
+                <div className="flex items-center gap-1" style={{ color: primaryColor }}>
                   <span>_</span>
-                  <span className="w-2 h-3 bg-[#c0392b] animate-pulse" />
+                  <span className="w-2 h-3 animate-pulse" style={{ backgroundColor: primaryColor }} />
                 </div>
               </div>
             </div>
@@ -212,22 +229,22 @@ export default function LoginPage() {
 
           {/* ── RIGHT PANEL (Login) ── */}
           <div className="flex-1 w-full max-w-md">
-            <div className="bg-[#141414]/90 border border-[#c0392b]/40 p-8 relative shadow-[0_0_40px_-10px_rgba(192,57,43,0.3)] backdrop-blur-md">
+            <div className="bg-[#141414]/90 border p-8 relative backdrop-blur-md" style={{ borderColor: `${primaryColor}66`, boxShadow: `0 0 40px -10px ${primaryColor}4d` }}>
               {/* Corner decorations */}
-              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#c0392b]" />
-              <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#c0392b]" />
-              <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[#c0392b]" />
-              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#c0392b]" />
+              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: primaryColor }} />
+              <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: primaryColor }} />
+              <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: primaryColor }} />
+              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: primaryColor }} />
 
               <div className="text-center mb-8">
                 <h2 className="font-share-tech text-2xl text-white uppercase tracking-widest mb-1">
                   {role === "faculty" ? "Faculty Terminal" : "Student Terminal"}
                 </h2>
-                <p className="text-[#a85050] text-sm font-share-tech uppercase tracking-widest">Authenticate to continue</p>
+                <p className="text-sm font-share-tech uppercase tracking-widest" style={{ color: primaryMuted }}>Authenticate to continue</p>
               </div>
 
               {error && (
-                <div className="mb-6 flex items-start gap-3 text-sm text-[#c0392b] bg-[#c0392b]/10 border border-[#c0392b]/30 p-3">
+                <div className="mb-6 flex items-start gap-3 text-sm p-3 border" style={{ color: primaryColor, backgroundColor: `${primaryColor}1a`, borderColor: `${primaryColor}4d` }}>
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span className="font-share-tech uppercase">{error}</span>
                 </div>
@@ -239,7 +256,7 @@ export default function LoginPage() {
                     Email Address
                   </label>
                   <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a8a] group-focus-within:text-[#c0392b] transition-colors" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a8a] transition-colors group-focus-within:text-current" style={{ color: "inherit" }} />
                     <input
                       id="email"
                       type="email"
@@ -247,8 +264,13 @@ export default function LoginPage() {
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       required
-                      className="w-full bg-[#0d0d0d] border border-[#333] focus:border-[#c0392b] text-white text-sm pl-10 pr-4 py-3 outline-none transition-colors font-share-tech"
+                      className="w-full bg-[#0d0d0d] border border-[#333] text-white text-sm pl-10 pr-4 py-3 outline-none transition-colors font-share-tech focus-within-border-primary"
                     />
+                    {/* Inline style to handle focus border color */}
+                    <style>{`
+                      #email:focus, #password:focus { border-color: ${primaryColor}; }
+                      .group:focus-within svg { color: ${primaryColor} !important; }
+                    `}</style>
                   </div>
                 </div>
 
@@ -257,12 +279,13 @@ export default function LoginPage() {
                     <label htmlFor="password" className="block text-xs font-share-tech text-[#8a8a8a] uppercase tracking-widest">
                       Password
                     </label>
-                    <Link href="/forgot-password" className="text-[10px] font-share-tech text-[#a85050] hover:text-[#c0392b] uppercase tracking-widest transition-colors">
+                    <Link href="/reset-password" className="text-[10px] font-share-tech uppercase tracking-widest transition-colors hover-text-primary" style={{ color: primaryMuted }}>
                       Recover Key?
                     </Link>
+                    <style>{`.hover-text-primary:hover { color: ${primaryColor} !important; }`}</style>
                   </div>
                   <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a8a] group-focus-within:text-[#c0392b] transition-colors" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a8a] transition-colors" />
                     <input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -270,12 +293,12 @@ export default function LoginPage() {
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       required
-                      className="w-full bg-[#0d0d0d] border border-[#333] focus:border-[#c0392b] text-white text-sm pl-10 pr-10 py-3 outline-none transition-colors font-share-tech"
+                      className="w-full bg-[#0d0d0d] border border-[#333] text-white text-sm pl-10 pr-10 py-3 outline-none transition-colors font-share-tech"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(v => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8a8a] hover:text-[#c0392b] transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8a8a] transition-colors hover-text-primary"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -285,7 +308,8 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#c0392b] hover:bg-[#a85050] text-white font-share-tech uppercase tracking-widest py-3 flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                  className="w-full text-white font-share-tech uppercase tracking-widest py-3 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 hover-bg-primary"
+                  style={{ backgroundColor: primaryColor }}
                 >
                   {loading ? (
                     "Authenticating..."
@@ -293,12 +317,14 @@ export default function LoginPage() {
                     <>Initialize <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
+                <style>{`.hover-bg-primary:hover { background-color: ${primaryMuted} !important; }`}</style>
               </form>
 
               <div className="mt-6 text-center">
                 <p className="text-xs font-share-tech text-[#8a8a8a] uppercase tracking-widest">
-                  New Operative? <Link href="/register" className="text-[#c0392b] hover:text-[#e74c3c] transition-colors">Register</Link>
+                  New Operative? <Link href="/register" className="transition-colors hover-text-highlight" style={{ color: primaryColor }}>Register</Link>
                 </p>
+                <style>{`.hover-text-highlight:hover { color: ${primaryHighlight} !important; }`}</style>
               </div>
             </div>
           </div>

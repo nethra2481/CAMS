@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -38,11 +38,16 @@ export default function RegisterPage() {
       
       <Card className="w-full max-w-xl z-10 bg-slate-900/80 border-slate-800 backdrop-blur-xl shadow-2xl">
         <CardHeader className="space-y-1 text-center">
-          <Link href="/">
-            <div className="mx-auto bg-cyan-500/10 w-16 h-16 rounded-full flex items-center justify-center mb-4 border border-cyan-500/20">
-              <span className="text-2xl font-bold text-cyan-400">C</span>
-            </div>
+          <Link href="/login" className="absolute top-6 left-6 flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to Login
           </Link>
+          <div className="pt-6">
+            <Link href="/">
+              <div className="mx-auto bg-cyan-500/10 w-16 h-16 rounded-full flex items-center justify-center mb-4 border border-cyan-500/20">
+                <span className="text-2xl font-bold text-cyan-400">C</span>
+              </div>
+            </Link>
+          </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             Student Registration
           </CardTitle>

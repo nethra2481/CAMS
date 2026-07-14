@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, KeyRound, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { Loader2, KeyRound, CheckCircle2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 function ResetPasswordForm() {
@@ -152,6 +152,10 @@ export default function ResetPasswordPage() {
         <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-emerald-900/20 blur-[120px]"></div>
         <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[100px]"></div>
       </div>
+
+      <Link href="/login" className="absolute top-6 left-6 z-20 flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 transition-colors">
+        <ArrowLeft className="w-4 h-4" /> Back to Login
+      </Link>
 
       <div className="w-full max-w-md z-10 animate-fade-in">
         <div className="text-center mb-8">
