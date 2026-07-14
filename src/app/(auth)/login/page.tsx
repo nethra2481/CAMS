@@ -172,7 +172,7 @@ export default function LoginPage() {
 
               <div>
                 <h1 className="font-press-start text-3xl md:text-5xl tracking-widest text-[#f0f0f0] mt-4 mb-2">
-                  CAMS <span className="text-[#c0392b]">CTF</span>
+                  CAMS <span className="text-[#c0392b]">PORTAL</span>
                 </h1>
                 <p className="font-share-tech text-[#a85050] tracking-[0.3em] text-sm uppercase">Amrita TIFAC-CORE · {new Date().getFullYear()}</p>
               </div>
