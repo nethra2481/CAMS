@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trophy, Mail, Phone, Building, Briefcase, Award, Loader2, Globe, Code, Terminal, Edit3, X, Save } from "lucide-react";
+import { Trophy, Mail, Phone, Building, Briefcase, Award, Loader2, Globe, Code, Terminal, Edit3, X, Save, ShieldAlert, CheckCircle2, XCircle, Clock } from "lucide-react";
 
 export default function StudentProfilePage() {
   const { data: session } = useSession();
@@ -304,6 +304,63 @@ export default function StudentProfilePage() {
               )}
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* Achievements Section */}
+      {!isEditing && userProfile?.achievements && userProfile.achievements.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold tracking-widest text-[#f0f0f0] uppercase flex items-center gap-3 border-b border-[#c0392b]/30 pb-4 mb-6">
+            <ShieldAlert className="w-6 h-6 text-[#c0392b]" /> Operations Log
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {userProfile.achievements.map((ach: any) => (
+              <Card key={ach.id} className="cyber-card backdrop-blur-xl relative overflow-hidden">
+                <div className={`absolute top-0 left-0 w-1 h-full ${
+                  ach.status === "APPROVED" ? "bg-emerald-500 shadow-[0_0_10px_#10b981]" :
+                  ach.status === "REJECTED" ? "bg-red-500 shadow-[0_0_10px_#ef4444]" :
+                  ach.status === "HOLD" ? "bg-amber-500 shadow-[0_0_10px_#f59e0b]" : 
+                  "bg-blue-500 shadow-[0_0_10px_#3b82f6]"
+                }`}></div>
+                
+                <CardHeader className="pb-3 border-b border-[#c0392b]/10">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg text-[#f0f0f0] uppercase tracking-wider">{ach.title}</CardTitle>
+                      <CardDescription className="text-[#8a8a8a] mt-1 font-share-tech tracking-widest text-xs uppercase">{ach.organizer}</CardDescription>
+                    </div>
+                    <span className={`px-2 py-1 text-xs font-bold tracking-wider flex items-center border ${
+                      ach.status === "APPROVED" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" :
+                      ach.status === "REJECTED" ? "bg-red-500/10 text-red-400 border-red-500/30" :
+                      ach.status === "HOLD" ? "bg-amber-500/10 text-amber-400 border-amber-500/30" : 
+                      "bg-blue-500/10 text-blue-400 border-blue-500/30"
+                    }`}>
+                      {ach.status === "APPROVED" && <CheckCircle2 className="w-3 h-3 mr-1 inline" />}
+                      {ach.status === "REJECTED" && <XCircle className="w-3 h-3 mr-1 inline" />}
+                      {ach.status === "HOLD" && <Clock className="w-3 h-3 mr-1 inline" />}
+                      {ach.status === "PENDING" && <Clock className="w-3 h-3 mr-1 inline" />}
+                      {ach.status}
+                    </span>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="pt-4 space-y-4">
+                  <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-widest font-share-tech">
+                    <span className="px-2 py-1 rounded-sm bg-[#0d0d0d] border border-[#c0392b]/30 text-[#d0d0d0]">{ach.category}</span>
+                    <span className="px-2 py-1 rounded-sm bg-[#0d0d0d] border border-[#c0392b]/30 text-[#d0d0d0]">{ach.result}</span>
+                    <span className="px-2 py-1 rounded-sm bg-[#0d0d0d] border border-[#c0392b]/30 text-[#d0d0d0]">{new Date(ach.startDate).toLocaleDateString()}</span>
+                  </div>
+
+                  {ach.facultyRemark && (
+                    <div className="p-3 bg-[#0d0d0d] border border-[#c0392b]/40 text-xs">
+                      <span className="text-[#8a8a8a] font-bold block mb-1 uppercase tracking-widest">HQ Transmit (Remark):</span>
+                      <span className="text-[#c0392b]">{ach.facultyRemark}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       )}
     </div>

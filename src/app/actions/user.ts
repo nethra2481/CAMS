@@ -63,6 +63,15 @@ export async function updateProfile(formData: FormData) {
   const skills = formData.get("skills") as string;
   const aboutMe = formData.get("aboutMe") as string;
 
+  // Security & Validation: Length and type constraints
+  if (name && name.length > 100) return { error: "Name is too long." };
+  if (mobile && mobile.length > 20) return { error: "Mobile number is too long." };
+  if (batch && batch.length > 20) return { error: "Batch is too long." };
+  if (github && github.length > 200) return { error: "GitHub URL is too long." };
+  if (linkedin && linkedin.length > 200) return { error: "LinkedIn URL is too long." };
+  if (skills && skills.length > 500) return { error: "Skills text is too long." };
+  if (aboutMe && aboutMe.length > 2000) return { error: "About Me text is too long." };
+
   try {
     await prisma.user.update({
       where: { email: session.user.email },
@@ -90,7 +99,12 @@ export async function getProfile() {
   
   try {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: { email: session.user.email },
+      include: {
+        achievements: {
+          orderBy: { createdAt: "desc" }
+        }
+      }
     });
     return user;
   } catch (e) {
