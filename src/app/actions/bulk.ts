@@ -28,17 +28,30 @@ export async function bulkUpdateStatus(achievementIds: string[], status: "APPROV
   }
 }
 
-export async function updateSingleStatus(achievementId: string, status: "APPROVED" | "REJECTED" | "PENDING") {
+export async function updateSingleStatus(
+  achievementId: string,
+  status: "APPROVED" | "REJECTED" | "PENDING",
+  scoreAwarded?: number
+) {
   const session = await getServerSession(authOptions);
-  
+
   if (!session || session.user?.role !== "FACULTY") {
     return { error: "Unauthorized" };
   }
 
   try {
+    const updateData: { status: string; scoreAwarded?: number } = { status };
+
+    if (status === "APPROVED" && scoreAwarded !== undefined) {
+      updateData.scoreAwarded = scoreAwarded;
+    } else if (status !== "APPROVED") {
+      // Reset score if not approved
+      updateData.scoreAwarded = 0;
+    }
+
     await prisma.achievement.update({
       where: { id: achievementId },
-      data: { status }
+      data: updateData,
     });
     return { success: true };
   } catch (err) {

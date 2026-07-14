@@ -4,26 +4,37 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import BulkApprovalTable from "./BulkApprovalTable";
 
-export default async function FacultyApprovalsPage({ searchParams }: { searchParams: { eventId?: string } }) {
+export default async function FacultyApprovalsPage({ searchParams }: { searchParams: Promise<{ eventId?: string }> }) {
   const session = await getServerSession(authOptions);
-  
+
   if (!session || session.user?.role !== "FACULTY") {
     redirect("/login");
   }
 
+  const { eventId } = await searchParams;
   const whereClause: any = {};
-  if (searchParams.eventId) {
-    whereClause.announcementId = searchParams.eventId;
+  if (eventId) {
+    whereClause.announcementId = eventId;
   }
 
-  const achievements = await prisma.achievement.findMany({
-    where: whereClause,
-    include: {
-      student: { select: { name: true, registerNumber: true } },
-      proofFiles: true
-    },
-    orderBy: { createdAt: "desc" }
-  });
+  const [achievements, templates] = await Promise.all([
+    prisma.achievement.findMany({
+      where: whereClause,
+      include: {
+        student: { select: { name: true, registerNumber: true } },
+        proofFiles: { select: { url: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.formTemplate.findMany({
+      select: { category: true, readinessPoints: true },
+    }),
+  ]);
+
+  // Build a category → default points lookup for the UI
+  const categoryPoints = Object.fromEntries(
+    templates.map((t) => [t.category, t.readinessPoints])
+  );
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-fade-in pb-12">
@@ -32,7 +43,7 @@ export default async function FacultyApprovalsPage({ searchParams }: { searchPar
         <p className="text-slate-400 mt-2">Fast triage and batch approve/reject student submissions.</p>
       </div>
 
-      <BulkApprovalTable achievements={achievements} />
+      <BulkApprovalTable achievements={achievements} categoryPoints={categoryPoints} />
     </div>
   );
 }
