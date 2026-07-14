@@ -51,7 +51,42 @@ export async function getFormTemplate(category: string) {
       where: { category }
     });
     
-    return { success: true, template };
+    if (template) {
+      return { success: true, template };
+    }
+
+    // Fallback default templates if not defined in database
+    if (category === "Hackathon") {
+      return {
+        success: true,
+        template: {
+          category: "Hackathon",
+          schemaJson: JSON.stringify([
+            { name: "projectLink", label: "Project / GitHub Link", type: "url", required: true },
+            { name: "techStack", label: "Tech Stack Used", type: "text", required: true },
+            { name: "demoVideo", label: "Demo Video Link (Optional)", type: "url", required: false }
+          ]),
+          readinessPoints: 0
+        }
+      };
+    }
+
+    if (category === "CTF") {
+      return {
+        success: true,
+        template: {
+          category: "CTF",
+          schemaJson: JSON.stringify([
+            { name: "teamRank", label: "Overall Team Rank", type: "number", required: true },
+            { name: "pointsScored", label: "Total Points Scored", type: "number", required: true },
+            { name: "writeupLink", label: "Writeup URL (Optional)", type: "url", required: false }
+          ]),
+          readinessPoints: 0
+        }
+      };
+    }
+    
+    return { success: true, template: null };
   } catch (err) {
     console.error("Failed to fetch template:", err);
     return { error: "Failed to fetch template" };

@@ -351,6 +351,17 @@ export default function StudentProfilePage() {
                     <span className="px-2 py-1 rounded-sm bg-[#0d0d0d] border border-[#c0392b]/30 text-[#d0d0d0]">{new Date(ach.startDate).toLocaleDateString()}</span>
                   </div>
 
+                  {ach.dynamicData && (
+                    <div className="space-y-1 mt-2 border-t border-[#c0392b]/20 pt-3">
+                      {Object.entries(JSON.parse(ach.dynamicData)).map(([key, val]) => (
+                        <div key={key} className="text-xs font-share-tech flex flex-col sm:flex-row sm:gap-2">
+                          <span className="text-[#8a8a8a] uppercase">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</span>
+                          <span className="text-[#d0d0d0] break-all">{String(val)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {ach.facultyRemark && (
                     <div className="p-3 bg-[#0d0d0d] border border-[#c0392b]/40 text-xs">
                       <span className="text-[#8a8a8a] font-bold block mb-1 uppercase tracking-widest">HQ Transmit (Remark):</span>
