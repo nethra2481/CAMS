@@ -1,25 +1,47 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Terminal } from "lucide-react";
 
-const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
-  id: i,
-  left: `${Math.random() * 100}%`,
-  top: `${Math.random() * 100}%`,
-  delay: `${Math.random() * 5}s`,
-  duration: `${4 + Math.random() * 6}s`,
-  size: Math.random() > 0.5 ? "w-1 h-1" : "w-0.5 h-0.5",
-}));
+// ── Cybersecurity terminal log lines ──────────────────────
+const LOG_LINES = [
+  { type: "ok",   text: "[+] TLS 1.3 handshake complete" },
+  { type: "info", text: "[*] Scanning port 443... OPEN" },
+  { type: "warn", text: "[!] Brute-force attempt blocked: 192.168.4.21" },
+  { type: "ok",   text: "[+] CTF flag captured: flag{r3v3rs3_3ng1n33r}" },
+  { type: "info", text: "[*] Packet analysis: 2,048 packets inspected" },
+  { type: "ok",   text: "[+] SQL injection payload neutralised" },
+  { type: "warn", text: "[!] Anomaly detected in auth logs" },
+  { type: "ok",   text: "[+] XSS vector sanitized successfully" },
+  { type: "info", text: "[*] AES-256 key rotation complete" },
+  { type: "ok",   text: "[+] Privilege escalation attempt denied" },
+  { type: "info", text: "[*] OWASP Top-10 audit: 0 critical issues" },
+  { type: "warn", text: "[!] Suspicious payload in POST /api/login" },
+  { type: "ok",   text: "[+] CVE-2024-1337 patch applied" },
+  { type: "info", text: "[*] Nmap scan finished: 3 open ports" },
+  { type: "ok",   text: "[+] Reverse shell blocked at firewall" },
+];
 
 const STATS = [
   { label: "Students Tracked", value: "500+" },
-  { label: "Achievements Logged", value: "2.4K+" },
-  { label: "CTFs Verified", value: "180+" },
+  { label: "CTFs Completed",   value: "180+" },
+  { label: "Achievements",     value: "2.4K+" },
+  { label: "Certs Verified",   value: "340+" },
 ];
+
+const SKILLS = ["Penetration Testing", "Reverse Engineering", "Network Security", "Malware Analysis", "OSINT", "Cryptography", "Web Exploitation", "Forensics"];
+
+const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
+  id: i,
+  left: `${(i * 37 + 11) % 100}%`,
+  top:  `${(i * 53 + 7)  % 100}%`,
+  delay: `${(i * 0.4).toFixed(1)}s`,
+  dur:   `${4 + (i % 4)}s`,
+  sm:    i % 3 === 0,
+}));
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,17 +50,45 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [termLines, setTermLines] = useState<typeof LOG_LINES>([]);
+  const [skillIdx, setSkillIdx] = useState(0);
+  const termRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => { setMounted(true); }, []);
+
+  // Drip log lines into the terminal
+  useEffect(() => {
+    if (!mounted) return;
+    let idx = 0;
+    const tick = () => {
+      setTermLines(prev => {
+        const next = [...prev, LOG_LINES[idx % LOG_LINES.length]];
+        return next.length > 10 ? next.slice(-10) : next;
+      });
+      idx++;
+    };
+    tick();
+    const id = setInterval(tick, 1800);
+    return () => clearInterval(id);
+  }, [mounted]);
+
+  // Auto-scroll terminal
+  useEffect(() => {
+    if (termRef.current) termRef.current.scrollTop = termRef.current.scrollHeight;
+  }, [termLines]);
+
+  // Rotate skill badge
+  useEffect(() => {
+    const id = setInterval(() => setSkillIdx(i => (i + 1) % SKILLS.length), 2500);
+    return () => clearInterval(id);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     const res = await signIn("credentials", { redirect: false, email, password });
-
     if (res?.error) {
       setError("Invalid email or password. Please try again.");
       setLoading(false);
@@ -47,87 +97,119 @@ export default function LoginPage() {
     }
   };
 
+  const logColor = (type: string) =>
+    type === "ok"   ? "text-emerald-400" :
+    type === "warn" ? "text-amber-400"   :
+                     "text-cyan-400";
+
   return (
     <div className="min-h-screen flex bg-[#030712] overflow-hidden">
 
-      {/* ── LEFT PANEL (branding) ───────────────────────────── */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
+      {/* ── LEFT PANEL ────────────────────────────────────── */}
+      <div className="hidden lg:flex lg:w-[55%] relative flex-col justify-between p-12 overflow-hidden">
 
-        {/* Animated mesh background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/60 via-slate-950 to-purple-950/40" />
-          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10" />
-          {/* Glowing orbs */}
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
-          {/* Floating particles */}
-          {mounted && PARTICLES.map(p => (
-            <div
-              key={p.id}
-              className={`absolute ${p.size} bg-cyan-400/40 rounded-full`}
-              style={{
-                left: p.left,
-                top: p.top,
-                animation: `float ${p.duration} ${p.delay} ease-in-out infinite alternate`,
-              }}
-            />
-          ))}
-        </div>
+        {/* Background layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/50 via-slate-950 to-purple-950/30" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.07]" />
+        <div className="absolute top-1/4  left-1/4  w-72 h-72 bg-cyan-500/8   rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
 
-        {/* Top logo */}
-        <div className="relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-cyan-400" />
-            </div>
-            <span className="text-white font-bold text-lg tracking-tight">CAMS Portal</span>
+        {/* Particles */}
+        {mounted && PARTICLES.map(p => (
+          <div
+            key={p.id}
+            className={`absolute ${p.sm ? "w-0.5 h-0.5" : "w-1 h-1"} bg-cyan-400/30 rounded-full`}
+            style={{ left: p.left, top: p.top, animation: `floatPt ${p.dur} ${p.delay} ease-in-out infinite alternate` }}
+          />
+        ))}
+
+        {/* Top: Logo */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/25 flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5 text-cyan-400" />
           </div>
+          <span className="text-white font-bold tracking-tight">CAMS · Amrita TIFAC-CORE</span>
         </div>
 
-        {/* Centre content */}
+        {/* Middle: Hero + terminal */}
         <div className="relative z-10 space-y-8">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              Amrita TIFAC-CORE · Cyber Security
-            </div>
+
+          {/* Rotating skill badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-mono text-cyan-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="transition-all duration-500">{SKILLS[skillIdx]}</span>
+          </div>
+
+          <div className="space-y-3">
             <h1 className="text-5xl font-extrabold text-white leading-tight tracking-tight">
-              Cyber Achievement<br />
+              Cyber Security<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
-                Management System
+                Achievement Hub
               </span>
             </h1>
-            <p className="text-slate-400 text-lg leading-relaxed max-w-md">
-              Centralised platform to record, verify, and celebrate department achievements — hackathons, CTFs, certifications and more.
+            <p className="text-slate-400 text-base leading-relaxed max-w-sm">
+              Log your hackathons, CTFs, certifications and research. Get verified by faculty. Build your placement-ready portfolio.
             </p>
           </div>
 
-          {/* Stats row */}
-          <div className="flex gap-6">
+          {/* ── Live terminal ── */}
+          <div className="rounded-xl border border-slate-700/60 bg-slate-950/80 overflow-hidden shadow-[0_0_40px_-15px_rgba(6,182,212,0.2)] backdrop-blur">
+            {/* Terminal titlebar */}
+            <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-slate-800 bg-slate-900/60">
+              <span className="w-3 h-3 rounded-full bg-red-500/70" />
+              <span className="w-3 h-3 rounded-full bg-amber-500/70" />
+              <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
+              <div className="flex items-center gap-1.5 ml-3 text-slate-500 text-xs font-mono">
+                <Terminal className="w-3 h-3" />
+                cams-soc — live feed
+              </div>
+            </div>
+            {/* Terminal body */}
+            <div ref={termRef} className="p-4 h-44 overflow-hidden font-mono text-xs space-y-1.5">
+              {termLines.map((line, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-2 ${logColor(line.type)} opacity-0`}
+                  style={{ animation: `fadeUp 0.4s ease forwards` }}
+                >
+                  <span className="text-slate-600 shrink-0 select-none">
+                    {new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                  </span>
+                  <span>{line.text}</span>
+                </div>
+              ))}
+              {/* Blinking cursor */}
+              <div className="flex items-center gap-1 text-cyan-400 font-mono text-xs">
+                <span className="text-slate-600">$</span>
+                <span className="w-2 h-4 bg-cyan-400 animate-pulse inline-block" />
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-4 gap-4">
             {STATS.map(s => (
-              <div key={s.label} className="space-y-1">
-                <p className="text-2xl font-bold text-white">{s.value}</p>
-                <p className="text-xs text-slate-500 uppercase tracking-wider">{s.label}</p>
+              <div key={s.label} className="bg-slate-900/40 border border-slate-800/60 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold text-white">{s.value}</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Bottom attribution */}
-        <div className="relative z-10 text-slate-600 text-xs font-mono">
-          © {new Date().getFullYear()} · Amrita Vishwa Vidyapeetham
+        {/* Bottom */}
+        <div className="relative z-10 text-slate-700 text-xs font-mono">
+          © {new Date().getFullYear()} · Amrita Vishwa Vidyapeetham · Coimbatore
         </div>
       </div>
 
-      {/* ── RIGHT PANEL (form) ──────────────────────────────── */}
-      <div className="flex-1 lg:w-1/2 flex items-center justify-center p-6 relative">
-
-        {/* Subtle radial glow behind form */}
+      {/* ── RIGHT PANEL ───────────────────────────────────── */}
+      <div className="flex-1 flex items-center justify-center p-6 relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(6,182,212,0.04),transparent)] pointer-events-none" />
 
         <div className="w-full max-w-md space-y-8 relative z-10">
 
-          {/* Mobile header (visible only on small screens) */}
+          {/* Mobile header */}
           <div className="lg:hidden text-center space-y-2">
             <div className="mx-auto w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-4">
               <ShieldCheck className="w-7 h-7 text-cyan-400" />
@@ -141,10 +223,9 @@ export default function LoginPage() {
 
             <div className="space-y-1">
               <h2 className="text-2xl font-bold text-white">Welcome back</h2>
-              <p className="text-slate-400 text-sm">Sign in to your account to continue</p>
+              <p className="text-slate-400 text-sm">Sign in to your secure portal</p>
             </div>
 
-            {/* Error alert */}
             {error && (
               <div className="flex items-start gap-3 text-sm text-red-400 bg-red-950/40 px-4 py-3 rounded-xl border border-red-900/50">
                 <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -229,7 +310,6 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Register link */}
             <p className="text-center text-sm text-slate-500">
               New student?{" "}
               <Link href="/register" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors hover:underline underline-offset-4">
@@ -238,19 +318,21 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Security badge */}
           <p className="text-center text-xs text-slate-700 flex items-center justify-center gap-1.5">
             <Lock className="w-3 h-3" />
-            Secured with end-to-end encryption
+            End-to-end encrypted · AES-256
           </p>
         </div>
       </div>
 
-      {/* Float animation keyframes */}
       <style>{`
-        @keyframes float {
-          from { transform: translateY(0px) scale(1); opacity: 0.4; }
-          to   { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
+        @keyframes floatPt {
+          from { transform: translateY(0px);    opacity: 0.3; }
+          to   { transform: translateY(-18px);  opacity: 0.7; }
+        }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0);   }
         }
       `}</style>
     </div>
