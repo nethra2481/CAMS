@@ -39,7 +39,8 @@ export default function TemplatesPage() {
     fetchTemplates();
   }, []);
 
-  const handleSelectCategory = (category: string) => {
+  const handleSelectCategory = (category: string | null) => {
+    if (!category) return;
     setSelectedCategory(category);
     const existing = templates.find(t => t.category === category);
     if (existing) {

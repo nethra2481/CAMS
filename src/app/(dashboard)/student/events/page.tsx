@@ -89,12 +89,12 @@ export default async function AvailableEventsPage() {
                       {hasSubmitted ? (
                         <div className="text-center w-full">
                           <div className={`px-4 py-2 rounded-lg font-bold text-sm mb-2 border
-                            ${submission.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
-                              submission.status === 'REJECTED' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
+                            ${submission?.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                              submission?.status === 'REJECTED' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
                               'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
-                            {submission.status === 'PENDING' ? 'Waiting for Review' : submission.status}
+                            {submission?.status === 'PENDING' ? 'Waiting for Review' : submission?.status}
                           </div>
-                          <Link href={`/student/achievements/${submission.id}`}>
+                          <Link href={`/student/achievements/${submission?.id}`}>
                             <Button variant="ghost" size="sm" className="text-cyan-400 hover:text-cyan-300 w-full text-xs">
                               View Submission <ChevronRight className="w-3 h-3 ml-1" />
                             </Button>

@@ -91,7 +91,7 @@ export async function submitAchievement(formData: FormData) {
   }
 
   const teammatesRaw = formData.get("teammates") as string;
-  let teamMembers = [];
+  let teamMembers: any[] = [];
   let isTeam = false;
   
   if (teammatesRaw) {

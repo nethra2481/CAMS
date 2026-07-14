@@ -59,9 +59,9 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
 
     await Promise.all(fetchPromises);
 
-    const zipBuffer = await zip.generateAsync({ type: "nodebuffer" });
+    const zipBuffer = await zip.generateAsync({ type: "uint8array" });
 
-    return new NextResponse(zipBuffer, {
+    return new NextResponse(zipBuffer as any, {
       status: 200,
       headers: {
         "Content-Type": "application/zip",

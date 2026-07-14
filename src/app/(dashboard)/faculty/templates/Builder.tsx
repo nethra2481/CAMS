@@ -114,7 +114,7 @@ export function Builder({ category, initialFields, initialPoints = 0, onSaved }:
                   
                   <div className="md:col-span-3 space-y-2">
                     <Label className="text-slate-400 text-xs uppercase tracking-wider">Data Type</Label>
-                    <Select value={field.type} onValueChange={(v: FieldType) => updateField(field.id, { type: v })}>
+                    <Select value={field.type} onValueChange={(v: FieldType | null) => v && updateField(field.id, { type: v })}>
                       <SelectTrigger className="bg-slate-950 border-slate-700 text-white">
                         <SelectValue />
                       </SelectTrigger>

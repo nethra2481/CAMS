@@ -10,8 +10,8 @@ export default function Home() {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4 border-r border-slate-800 pr-6">
               {/* Fallback to text if logos aren't in public dir yet */}
-              <img src="/amrita-logo.png" alt="Amrita Vishwa Vidyapeetham" className="h-12 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
-              <img src="/tifac-logo.png" alt="TIFAC-CORE in Cyber Security" className="h-12 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+              <img src="/amrita-logo.png" alt="Amrita Vishwa Vidyapeetham" className="h-12 object-contain" />
+              <img src="/tifac-logo.png" alt="TIFAC-CORE in Cyber Security" className="h-12 object-contain" />
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent hidden sm:block">
               Cyber Achievement Portal
