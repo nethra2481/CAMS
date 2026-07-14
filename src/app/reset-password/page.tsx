@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, KeyRound, CheckCircle2 } from "lucide-react";
+import { Loader2, KeyRound, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 function ResetPasswordForm() {
@@ -18,6 +18,8 @@ function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   if (!token) {
     return (
@@ -86,27 +88,47 @@ function ResetPasswordForm() {
         )}
         <div className="space-y-2">
           <Label htmlFor="password" className="text-slate-300">New Password</Label>
-          <Input 
-            id="password" 
-            name="password" 
-            type="password" 
-            required 
-            minLength={6}
-            placeholder="At least 6 characters"
-            className="bg-slate-950 border-slate-800 text-slate-200 focus:border-cyan-500 h-11" 
-          />
+          <div className="relative">
+            <Input 
+              id="password" 
+              name="password" 
+              type={showNew ? "text" : "password"}
+              required 
+              minLength={6}
+              placeholder="At least 6 characters"
+              className="bg-slate-950 border-slate-800 text-slate-200 focus:border-cyan-500 h-11 pr-10" 
+            />
+            <button
+              type="button"
+              onClick={() => setShowNew(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              tabIndex={-1}
+            >
+              {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
         <div className="space-y-2">
           <Label htmlFor="confirmPassword" className="text-slate-300">Confirm New Password</Label>
-          <Input 
-            id="confirmPassword" 
-            name="confirmPassword" 
-            type="password" 
-            required 
-            minLength={6}
-            placeholder="Repeat new password"
-            className="bg-slate-950 border-slate-800 text-slate-200 focus:border-cyan-500 h-11" 
-          />
+          <div className="relative">
+            <Input 
+              id="confirmPassword" 
+              name="confirmPassword" 
+              type={showConfirm ? "text" : "password"}
+              required 
+              minLength={6}
+              placeholder="Repeat new password"
+              className="bg-slate-950 border-slate-800 text-slate-200 focus:border-cyan-500 h-11 pr-10" 
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              tabIndex={-1}
+            >
+              {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </CardContent>
       <CardFooter className="flex-col gap-4 pb-6">
