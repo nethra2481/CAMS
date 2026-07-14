@@ -82,8 +82,8 @@ export default function Home() {
               
               {/* Amrita Logos */}
               <div className="flex items-center gap-4 border-r border-[#c0392b]/20 pr-6">
-                <img src="/amrita-logo.png" alt="Amrita Vishwa Vidyapeetham" className="h-10 object-contain brightness-0 invert opacity-90" />
-                <img src="/tifac-logo.png" alt="TIFAC-CORE in Cyber Security" className="h-10 object-contain brightness-0 invert opacity-90" />
+                <img src="/amrita-logo.png" alt="Amrita Vishwa Vidyapeetham" className="h-12 object-contain bg-white/5 p-1 rounded-sm" />
+                <img src="/tifac-logo.png" alt="TIFAC-CORE in Cyber Security" className="h-12 object-contain bg-white/5 p-1 rounded-sm" />
               </div>
 
               {/* Orbital Logo & Title */}
