@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import nodemailer from "nodemailer";
 
 export async function registerStudent(formData: FormData) {
   const email = formData.get("email") as string;
@@ -79,11 +80,36 @@ export async function requestPasswordReset(formData: FormData) {
     data: { email, token, expires }
   });
 
-  // MOCK EMAIL SENDING
-  console.log("======================================");
-  console.log(`PASSWORD RESET EMAIL TO: ${email}`);
-  console.log(`LINK: http://localhost:3000/reset-password?token=${token}`);
-  console.log("======================================");
+  // SEND ACTUAL EMAIL
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const resetLink = `${appUrl}/reset-password?token=${token}`;
+
+    await transporter.sendMail({
+      from: `"CAMS Support" <${process.env.SMTP_EMAIL}>`,
+      to: email,
+      subject: "Password Reset - Cyber Achievement Portal",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background: #09090b; color: #fff; border-radius: 8px; border: 1px solid #27272a;">
+          <h2 style="color: #06b6d4;">Password Reset Request</h2>
+          <p style="color: #a1a1aa;">We received a request to reset your password for your Cyber Achievement Portal account.</p>
+          <p style="color: #a1a1aa;">Click the button below to securely reset your password. This link will expire in 1 hour.</p>
+          <a href="${resetLink}" style="display: inline-block; margin: 20px 0; padding: 12px 24px; background-color: #06b6d4; color: #000; text-decoration: none; border-radius: 4px; font-weight: bold;">Reset Password</a>
+          <p style="margin-top: 20px; color: #52525b; font-size: 12px;">If you didn't request this, you can safely ignore this email.</p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Email sending failed:", error);
+  }
 
   return { success: true };
 }
