@@ -19,7 +19,7 @@ model User {
   name           String
   registerNumber String?   @unique
   mobile         String?
-  department     String?
+  department     String?   @default("CYS")
   year           String?
   section        String?
   batch          String?
