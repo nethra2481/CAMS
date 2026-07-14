@@ -29,11 +29,20 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [role, setRole] = useState("student");
   const [termLines, setTermLines] = useState<typeof LOG_LINES>([]);
   const termRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true); 
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get("role") === "faculty") {
+        setRole("faculty");
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!mounted) return;
@@ -211,7 +220,9 @@ export default function LoginPage() {
               <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#c0392b]" />
 
               <div className="text-center mb-8">
-                <h2 className="font-share-tech text-2xl text-white uppercase tracking-widest mb-1">System Login</h2>
+                <h2 className="font-share-tech text-2xl text-white uppercase tracking-widest mb-1">
+                  {role === "faculty" ? "Faculty Terminal" : "Student Terminal"}
+                </h2>
                 <p className="text-[#a85050] text-sm font-share-tech uppercase tracking-widest">Authenticate to continue</p>
               </div>
 
@@ -232,7 +243,7 @@ export default function LoginPage() {
                     <input
                       id="email"
                       type="email"
-                      placeholder="user@cb.amrita.edu"
+                      placeholder={role === "faculty" ? "faculty@cb.amrita.edu" : "rollnumber@cb.students.amrita.edu"}
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       required
