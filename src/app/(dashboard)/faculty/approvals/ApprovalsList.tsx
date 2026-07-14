@@ -104,12 +104,14 @@ export default function ApprovalsList({ initialData }: ApprovalsListProps) {
                 <div className="flex flex-wrap gap-3">
                   {achievement.proofFiles.map((file: any) => (
                     <Dialog key={file.id}>
-                      <DialogTrigger asChild>
-                        <button className="flex items-center gap-2 text-sm px-4 py-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-lg text-cyan-400 transition-all hover:shadow-[0_0_10px_-2px_rgba(6,182,212,0.3)] hover:-translate-y-0.5">
-                          <ExternalLink className="w-4 h-4" />
-                          {file.name}
-                        </button>
-                      </DialogTrigger>
+                      <DialogTrigger 
+                        render={
+                          <button className="flex items-center gap-2 text-sm px-4 py-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-lg text-cyan-400 transition-all hover:shadow-[0_0_10px_-2px_rgba(6,182,212,0.3)] hover:-translate-y-0.5">
+                            <ExternalLink className="w-4 h-4" />
+                            {file.name}
+                          </button>
+                        }
+                      />
                       <DialogContent className="bg-slate-950 border-slate-800 text-slate-200 max-w-5xl w-[95vw] h-[85vh] flex flex-col p-6 shadow-2xl">
                         <DialogHeader>
                           <DialogTitle className="flex justify-between items-center text-xl text-white pr-8">

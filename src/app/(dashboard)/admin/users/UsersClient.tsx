@@ -59,11 +59,13 @@ export default function UsersClient({ initialUsers, currentUserId }: { initialUs
     <div className="space-y-6">
       <div className="flex justify-end">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-purple-600 hover:bg-purple-500 text-white shadow-[0_0_15px_-3px_rgba(147,51,234,0.4)] transition-all hover:-translate-y-0.5">
-              <UserPlus className="w-4 h-4 mr-2" /> Add New User
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger 
+            render={
+              <Button className="bg-purple-600 hover:bg-purple-500 text-white shadow-[0_0_15px_-3px_rgba(147,51,234,0.4)] transition-all hover:-translate-y-0.5">
+                <UserPlus className="w-4 h-4 mr-2" /> Add New User
+              </Button>
+            }
+          />
           <DialogContent className="bg-slate-950 border-slate-800 text-slate-200">
             <DialogHeader>
               <DialogTitle className="text-white">Add New User</DialogTitle>
