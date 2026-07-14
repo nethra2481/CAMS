@@ -47,3 +47,53 @@ export async function changePassword(formData: FormData) {
     return { error: "Internal server error" };
   }
 }
+
+export async function updateProfile(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session || !session.user?.email) {
+    return { error: "Unauthorized" };
+  }
+
+  const name = formData.get("name") as string;
+  const mobile = formData.get("mobile") as string;
+  const batch = formData.get("batch") as string;
+  const linkedin = formData.get("linkedin") as string;
+  const github = formData.get("github") as string;
+  const skills = formData.get("skills") as string;
+  const aboutMe = formData.get("aboutMe") as string;
+
+  try {
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: {
+        ...(name && { name }),
+        mobile: mobile || null,
+        batch: batch || null,
+        linkedin: linkedin || null,
+        github: github || null,
+        skills: skills || null,
+        aboutMe: aboutMe || null,
+      }
+    });
+
+    return { success: true };
+  } catch (err) {
+    console.error("Profile update failed", err);
+    return { error: "Internal server error" };
+  }
+}
+
+export async function getProfile() {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?.email) return null;
+  
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+    return user;
+  } catch (e) {
+    return null;
+  }
+}
