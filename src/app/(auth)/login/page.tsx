@@ -4,29 +4,8 @@ import { signIn } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff,
-  Terminal, Globe, Key, Cpu, Search, Wifi, Code2, Bug, Fingerprint,
-  Binary, BookOpen, Zap, ShieldAlert,
-} from "lucide-react";
+import { Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Terminal } from "lucide-react";
 
-// ── CTF Category badges ────────────────────────────────────
-const CTF_CATS = [
-  { icon: Globe,       label: "Web",        color: "from-blue-500   to-cyan-500",   glow: "rgba(6,182,212,0.4)"    },
-  { icon: Key,         label: "Crypto",     color: "from-amber-500  to-yellow-400", glow: "rgba(245,158,11,0.4)"   },
-  { icon: Cpu,         label: "Rev",        color: "from-purple-500 to-violet-400", glow: "rgba(139,92,246,0.4)"   },
-  { icon: Terminal,    label: "Pwn",        color: "from-red-500    to-rose-400",   glow: "rgba(239,68,68,0.4)"    },
-  { icon: Search,      label: "Forensics",  color: "from-emerald-500 to-green-400", glow: "rgba(16,185,129,0.4)"   },
-  { icon: Wifi,        label: "Network",    color: "from-sky-500    to-blue-400",   glow: "rgba(14,165,233,0.4)"   },
-  { icon: Code2,       label: "Web3",       color: "from-orange-500 to-amber-400",  glow: "rgba(249,115,22,0.4)"   },
-  { icon: Bug,         label: "Bug Bounty", color: "from-pink-500   to-rose-400",   glow: "rgba(236,72,153,0.4)"   },
-  { icon: Fingerprint, label: "OSINT",      color: "from-teal-500   to-cyan-400",   glow: "rgba(20,184,166,0.4)"   },
-  { icon: Binary,      label: "Binary",     color: "from-lime-500   to-green-400",  glow: "rgba(132,204,22,0.4)"   },
-  { icon: BookOpen,    label: "Misc",       color: "from-slate-400  to-slate-300",  glow: "rgba(148,163,184,0.3)"  },
-  { icon: Zap,         label: "Hardware",   color: "from-yellow-400 to-orange-400", glow: "rgba(251,191,36,0.4)"   },
-];
-
-// ── Log lines ──────────────────────────────────────────────
 const LOG_LINES = [
   { type: "ok",   text: "[+] TLS 1.3 handshake complete" },
   { type: "info", text: "[*] Scanning port 443... OPEN" },
@@ -38,34 +17,21 @@ const LOG_LINES = [
   { type: "ok",   text: "[+] XSS vector sanitized successfully" },
   { type: "info", text: "[*] AES-256 key rotation complete" },
   { type: "ok",   text: "[+] Privilege escalation attempt denied" },
-  { type: "ok",   text: "[+] CVE-2024-1337 patch applied" },
-  { type: "info", text: "[*] Nmap scan finished: 3 open ports" },
+  { type: "info", text: "[*] OWASP Top-10 audit: 0 critical issues" },
   { type: "warn", text: "[!] Suspicious payload in POST /api/login" },
-  { type: "ok",   text: "[+] Reverse shell blocked at firewall" },
+  { type: "ok",   text: "[+] CVE-2024-1337 patch applied" },
 ];
 
-const SKILLS = ["Penetration Testing","Reverse Engineering","Network Security","Malware Analysis","OSINT","Cryptography","Web Exploitation","Forensics"];
-
-const PARTICLES = Array.from({ length: 15 }, (_, i) => ({
-  id: i, left: `${(i * 37 + 11) % 100}%`, top: `${(i * 53 + 7) % 100}%`,
-  delay: `${(i * 0.4).toFixed(1)}s`, dur: `${4 + (i % 4)}s`, sm: i % 3 === 0,
-}));
-
-// Hex clip path (pointy-top)
-const HEX = "polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)";
-
 export default function LoginPage() {
-  const [email, setEmail]           = useState("");
-  const [password, setPassword]     = useState("");
-  const [showPassword, setShowPass] = useState(false);
-  const [error, setError]           = useState("");
-  const [loading, setLoading]       = useState(false);
-  const [mounted, setMounted]       = useState(false);
-  const [termLines, setTermLines]   = useState<typeof LOG_LINES>([]);
-  const [skillIdx, setSkillIdx]     = useState(0);
-  const [activeHex, setActiveHex]   = useState<number | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [termLines, setTermLines] = useState<typeof LOG_LINES>([]);
   const termRef = useRef<HTMLDivElement>(null);
-  const router  = useRouter();
+  const router = useRouter();
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -75,7 +41,7 @@ export default function LoginPage() {
     const tick = () => {
       setTermLines(prev => {
         const next = [...prev, LOG_LINES[idx % LOG_LINES.length]];
-        return next.length > 8 ? next.slice(-8) : next;
+        return next.length > 5 ? next.slice(-5) : next;
       });
       idx++;
     };
@@ -88,283 +54,245 @@ export default function LoginPage() {
     if (termRef.current) termRef.current.scrollTop = termRef.current.scrollHeight;
   }, [termLines]);
 
-  useEffect(() => {
-    const id = setInterval(() => setSkillIdx(i => (i + 1) % SKILLS.length), 2500);
-    return () => clearInterval(id);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     const res = await signIn("credentials", { redirect: false, email, password });
-    if (res?.error) { setError("Invalid email or password."); setLoading(false); }
-    else router.push("/dashboard");
+    if (res?.error) {
+      setError("Invalid email or password.");
+      setLoading(false);
+    } else {
+      router.push("/dashboard");
+    }
   };
 
-  const logColor = (t: string) => t === "ok" ? "text-emerald-400" : t === "warn" ? "text-amber-400" : "text-cyan-400";
+  const logColor = (t: string) => t === "ok" ? "text-[#c0392b]" : t === "warn" ? "text-amber-500" : "text-[#a85050]";
 
   return (
-    <div className="min-h-screen flex bg-[#030712] overflow-hidden">
-
-      {/* ══ LEFT PANEL ══════════════════════════════════════ */}
-      <div className="hidden lg:flex lg:w-[58%] relative flex-col justify-between p-10 overflow-hidden">
-
-        {/* BG layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/40 via-slate-950 to-purple-950/30" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-[0.06]" />
-        <div className="absolute top-1/4  left-1/4  w-72 h-72 bg-cyan-500/8   rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-500/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
-
-        {mounted && PARTICLES.map(p => (
-          <div key={p.id} className={`absolute ${p.sm ? "w-0.5 h-0.5" : "w-1 h-1"} bg-cyan-400/25 rounded-full`}
-            style={{ left: p.left, top: p.top, animation: `floatPt ${p.dur} ${p.delay} ease-in-out infinite alternate` }} />
-        ))}
-
-        {/* ── Top logo ── */}
-        <div className="relative z-10 flex items-center gap-3">
-          {/* Skull-style CTF logo */}
-          <div className="relative">
-            <div className="w-11 h-11 rounded-xl bg-slate-900 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_20px_-5px_rgba(6,182,212,0.5)]">
-              <ShieldCheck className="w-6 h-6 text-cyan-400" />
-            </div>
-            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950 animate-pulse" />
-          </div>
-          <div>
-            <p className="text-white font-bold tracking-tight text-sm leading-none">CAMS · TIFAC-CORE</p>
-            <p className="text-cyan-500/70 font-mono text-[10px] mt-0.5">Amrita Vishwa Vidyapeetham</p>
-          </div>
-        </div>
-
-        {/* ── Middle ── */}
-        <div className="relative z-10 space-y-7">
-
-          {/* Skill badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-mono text-cyan-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            {SKILLS[skillIdx]}
-          </div>
-
-          <div>
-            <h1 className="text-4xl font-extrabold text-white leading-tight tracking-tight mb-2">
-              Cyber Security<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
-                Achievement Hub
-              </span>
-            </h1>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-              Log your hackathons, CTFs, certs and research — verified by faculty, showcased to the world.
-            </p>
-          </div>
-
-          {/* ── CTF CATEGORY HEX GRID ── */}
-          <div>
-            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-              <ShieldAlert className="w-3 h-3 text-cyan-500" /> Challenge Categories
-            </p>
-            <div className="grid grid-cols-6 gap-2">
-              {CTF_CATS.map((cat, i) => {
-                const Icon = cat.icon;
-                const isActive = activeHex === i;
-                return (
-                  <div
-                    key={cat.label}
-                    onMouseEnter={() => setActiveHex(i)}
-                    onMouseLeave={() => setActiveHex(null)}
-                    className="flex flex-col items-center gap-1.5 cursor-default group"
-                  >
-                    {/* Hexagon badge */}
-                    <div className="relative w-12 h-14 flex items-center justify-center transition-all duration-300"
-                      style={{ filter: isActive ? `drop-shadow(0 0 8px ${cat.glow})` : undefined }}>
-                      {/* Hex background */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-${isActive ? '20' : '10'} transition-opacity duration-300`}
-                        style={{ clipPath: HEX }}
-                      />
-                      {/* Hex border */}
-                      <div
-                        className="absolute inset-0 border border-white/10"
-                        style={{ clipPath: HEX, background: "transparent" }}
-                      />
-                      {/* Hex border glow on hover */}
-                      <div
-                        className={`absolute inset-0 transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-0"}`}
-                        style={{
-                          clipPath: HEX,
-                          background: `linear-gradient(135deg, ${cat.glow.replace("0.4", "0.3")}, transparent)`,
-                          border: `1px solid ${cat.glow}`,
-                        }}
-                      />
-                      <Icon className={`w-5 h-5 relative z-10 transition-all duration-300 bg-gradient-to-br ${cat.color} bg-clip-text text-transparent
-                        ${isActive ? "scale-110" : ""}`}
-                        style={{ color: isActive ? "white" : undefined }}
-                      />
-                    </div>
-                    <span className={`text-[9px] font-mono uppercase tracking-wide transition-colors duration-200
-                      ${isActive ? "text-white" : "text-slate-600"}`}>
-                      {cat.label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ── Live terminal ── */}
-          <div className="rounded-xl border border-slate-700/50 bg-slate-950/90 overflow-hidden shadow-[0_0_30px_-12px_rgba(6,182,212,0.2)] backdrop-blur">
-            <div className="flex items-center gap-1.5 px-4 py-2 border-b border-slate-800/80 bg-slate-900/50">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-              <div className="flex items-center gap-1.5 ml-3 text-slate-500 text-[10px] font-mono">
-                <Terminal className="w-3 h-3" />
-                cams-soc — live threat feed
-              </div>
-            </div>
-            <div ref={termRef} className="p-3 h-36 overflow-hidden font-mono text-[10px] space-y-1">
-              {termLines.map((line, i) => (
-                <div key={i} className={`flex items-start gap-2 ${logColor(line.type)}`}
-                  style={{ animation: "fadeUp 0.35s ease forwards", opacity: 0 }}>
-                  <span className="text-slate-700 shrink-0">
-                    {new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-                  </span>
-                  <span>{line.text}</span>
-                </div>
-              ))}
-              <div className="flex items-center gap-1 text-cyan-400 text-[10px] font-mono">
-                <span className="text-slate-700">$</span>
-                <span className="w-1.5 h-3.5 bg-cyan-400 animate-pulse inline-block" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom */}
-        <div className="relative z-10 text-slate-700 text-[10px] font-mono">
-          © {new Date().getFullYear()} · Amrita Vishwa Vidyapeetham · Coimbatore
-        </div>
-      </div>
-
-      {/* ══ RIGHT PANEL ═════════════════════════════════════ */}
-      <div className="flex-1 flex items-center justify-center p-6 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(6,182,212,0.04),transparent)] pointer-events-none" />
-
-        <div className="w-full max-w-md space-y-7 relative z-10">
-
-          {/* Mobile header */}
-          <div className="lg:hidden text-center space-y-2">
-            <div className="mx-auto w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mb-4">
-              <ShieldCheck className="w-7 h-7 text-cyan-400" />
-            </div>
-            <h2 className="text-2xl font-bold text-white">CAMS Portal</h2>
-            {/* Mobile mini hex grid */}
-            <div className="flex justify-center gap-2 pt-2 flex-wrap">
-              {CTF_CATS.slice(0, 6).map((cat) => {
-                const Icon = cat.icon;
-                return (
-                  <div key={cat.label} className="w-9 h-10 flex items-center justify-center relative"
-                    style={{ filter: `drop-shadow(0 0 4px ${cat.glow})` }}>
-                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-15`} style={{ clipPath: HEX }} />
-                    <Icon className="w-4 h-4 text-white/60 relative z-10" />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Form card */}
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-8 shadow-[0_0_60px_-15px_rgba(6,182,212,0.15)] backdrop-blur-xl space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-white">Welcome back</h2>
-              <p className="text-slate-400 text-sm">Sign in to your secure portal</p>
-            </div>
-
-            {error && (
-              <div className="flex items-start gap-3 text-sm text-red-400 bg-red-950/40 px-4 py-3 rounded-xl border border-red-900/50">
-                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Email Address
-                </label>
-                <div className="relative group">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-200" />
-                  <input id="email" type="email" autoComplete="email" placeholder="you@cb.amrita.edu"
-                    value={email} onChange={e => setEmail(e.target.value)} required
-                    className="w-full h-12 pl-10 pr-4 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Password
-                  </label>
-                  <Link href="/forgot-password" className="text-xs text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
-                    Forgot password?
-                  </Link>
-                </div>
-                <div className="relative group">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-200" />
-                  <input id="password" type={showPassword ? "text" : "password"} autoComplete="current-password"
-                    placeholder="••••••••••••" value={password} onChange={e => setPassword(e.target.value)} required
-                    className="w-full h-12 pl-10 pr-11 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 text-sm placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
-                  />
-                  <button type="button" onClick={() => setShowPass(v => !v)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Submit */}
-              <button type="submit" disabled={loading}
-                className="group w-full h-12 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-sm transition-all duration-200 shadow-[0_0_25px_-5px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_-5px_rgba(6,182,212,0.6)] hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 flex items-center justify-center gap-2">
-                {loading ? (
-                  <>
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Signing in…
-                  </>
-                ) : (
-                  <>Sign In <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" /></>
-                )}
-              </button>
-            </form>
-
-            <p className="text-center text-sm text-slate-500">
-              New student?{" "}
-              <Link href="/register" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors hover:underline underline-offset-4">
-                Create an account
-              </Link>
-            </p>
-          </div>
-
-          <p className="text-center text-xs text-slate-700 flex items-center justify-center gap-1.5">
-            <Lock className="w-3 h-3" /> End-to-end encrypted · AES-256
-          </p>
-        </div>
-      </div>
-
+    <>
       <style>{`
-        @keyframes floatPt {
-          from { transform: translateY(0px);   opacity: 0.25; }
-          to   { transform: translateY(-16px); opacity: 0.65; }
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
+        
+        body {
+          background-color: #0d0d0d;
         }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(5px); }
-          to   { opacity: 1; transform: translateY(0);   }
+
+        .font-rajdhani { font-family: 'Rajdhani', sans-serif; }
+        .font-share-tech { font-family: 'Share Tech Mono', monospace; }
+        .font-press-start { font-family: 'Press Start 2P', monospace; }
+
+        .scanlines::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(192, 57, 43, 0.03) 2px,
+            rgba(192, 57, 43, 0.03) 4px
+          );
+          pointer-events: none;
+          z-index: 9999;
+        }
+
+        .grid-bg {
+          position: fixed;
+          inset: 0;
+          background-image:
+            linear-gradient(rgba(192, 57, 43, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(192, 57, 43, 0.04) 1px, transparent 1px);
+          background-size: 40px 40px;
+          pointer-events: none;
+        }
+
+        .ambient-glow {
+          position: fixed;
+          border-radius: 50%;
+          filter: blur(120px);
+          pointer-events: none;
+        }
+        .ambient-1 {
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(107, 15, 15, 0.35) 0%, transparent 70%);
+          top: -200px;
+          right: -200px;
+          animation: float1 8s ease-in-out infinite;
+        }
+        .ambient-2 {
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, rgba(155, 32, 32, 0.2) 0%, transparent 70%);
+          bottom: -100px;
+          left: -100px;
+          animation: float2 10s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-30px, 20px) scale(1.1); }
+        }
+        @keyframes float2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(20px, -30px) scale(0.9); }
         }
       `}</style>
-    </div>
+      
+      <div className="min-h-screen flex items-center justify-center scanlines font-rajdhani text-[#f0f0f0] relative overflow-hidden bg-[#0d0d0d]">
+        <div className="grid-bg z-0" />
+        <div className="ambient-glow ambient-1 z-0" />
+        <div className="ambient-glow ambient-2 z-0" />
+
+        <div className="relative z-10 w-full max-w-5xl flex flex-col lg:flex-row gap-12 items-center justify-between p-6">
+          
+          {/* ── LEFT PANEL (Branding) ── */}
+          <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
+            <div className="flex flex-col items-center lg:items-start gap-4">
+              <svg width="140" height="140" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_15px_rgba(192,57,43,0.6)]">
+                <defs>
+                  <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#C0392B" />
+                    <stop offset="100%" stopColor="#6B0F0F" />
+                  </linearGradient>
+                  <linearGradient id="g2" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#9B2020" />
+                    <stop offset="100%" stopColor="#4a0a0a" />
+                  </linearGradient>
+                </defs>
+                <ellipse cx="100" cy="100" rx="90" ry="30" stroke="url(#g1)" strokeWidth="11" fill="none" transform="rotate(0 100 100)" opacity="0.9" />
+                <ellipse cx="100" cy="100" rx="90" ry="30" stroke="url(#g1)" strokeWidth="11" fill="none" transform="rotate(60 100 100)" opacity="0.85" />
+                <ellipse cx="100" cy="100" rx="90" ry="30" stroke="url(#g1)" strokeWidth="11" fill="none" transform="rotate(-60 100 100)" opacity="0.8" />
+                <polygon points="100,78 118,89 118,111 100,122 82,111 82,89" fill="url(#g2)" opacity="0.7" stroke="#9B2020" strokeWidth="2" />
+                <circle cx="100" cy="100" r="16" fill="#7a1a1a" opacity="0.95" />
+                <circle cx="100" cy="100" r="10" fill="#C0392B" opacity="0.7" />
+                <circle cx="100" cy="100" r="5" fill="#e05a4a" opacity="0.9" />
+              </svg>
+
+              <div>
+                <h1 className="font-press-start text-3xl md:text-5xl tracking-widest text-[#f0f0f0] mt-4 mb-2">
+                  CAMS <span className="text-[#c0392b]">CTF</span>
+                </h1>
+                <p className="font-share-tech text-[#a85050] tracking-[0.3em] text-sm uppercase">Amrita TIFAC-CORE · {new Date().getFullYear()}</p>
+              </div>
+            </div>
+
+            <p className="text-[#8a8a8a] max-w-sm text-lg leading-relaxed">
+              Log your hackathons, CTFs, certifications and research. Prove your skills and build your placement-ready portfolio.
+            </p>
+
+            <div className="w-full max-w-sm border border-[#c0392b]/30 bg-[#141414]/80 backdrop-blur-sm p-4 relative">
+              <div className="absolute top-0 left-0 w-2 h-full bg-[#c0392b]" />
+              <div className="flex items-center gap-2 mb-2 text-[#c0392b] font-share-tech text-xs uppercase tracking-widest">
+                <Terminal className="w-4 h-4" /> root@cams-soc:~#
+              </div>
+              <div ref={termRef} className="font-share-tech text-xs space-y-1 h-20 overflow-hidden text-[#8a8a8a]">
+                {termLines.map((line, i) => (
+                  <div key={i} className={`flex items-start gap-2 ${logColor(line.type)}`}>
+                    <span>{line.text}</span>
+                  </div>
+                ))}
+                <div className="flex items-center gap-1 text-[#c0392b]">
+                  <span>_</span>
+                  <span className="w-2 h-3 bg-[#c0392b] animate-pulse" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT PANEL (Login) ── */}
+          <div className="flex-1 w-full max-w-md">
+            <div className="bg-[#141414]/90 border border-[#c0392b]/40 p-8 relative shadow-[0_0_40px_-10px_rgba(192,57,43,0.3)] backdrop-blur-md">
+              {/* Corner decorations */}
+              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#c0392b]" />
+              <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#c0392b]" />
+              <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[#c0392b]" />
+              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#c0392b]" />
+
+              <div className="text-center mb-8">
+                <h2 className="font-share-tech text-2xl text-white uppercase tracking-widest mb-1">System Login</h2>
+                <p className="text-[#a85050] text-sm font-share-tech uppercase tracking-widest">Authenticate to continue</p>
+              </div>
+
+              {error && (
+                <div className="mb-6 flex items-start gap-3 text-sm text-[#c0392b] bg-[#c0392b]/10 border border-[#c0392b]/30 p-3">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span className="font-share-tech uppercase">{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="block text-xs font-share-tech text-[#8a8a8a] uppercase tracking-widest">
+                    Email Address
+                  </label>
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a8a] group-focus-within:text-[#c0392b] transition-colors" />
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="user@cb.amrita.edu"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      required
+                      className="w-full bg-[#0d0d0d] border border-[#333] focus:border-[#c0392b] text-white text-sm pl-10 pr-4 py-3 outline-none transition-colors font-share-tech"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="password" className="block text-xs font-share-tech text-[#8a8a8a] uppercase tracking-widest">
+                      Password
+                    </label>
+                    <Link href="/forgot-password" className="text-[10px] font-share-tech text-[#a85050] hover:text-[#c0392b] uppercase tracking-widest transition-colors">
+                      Recover Key?
+                    </Link>
+                  </div>
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8a8a] group-focus-within:text-[#c0392b] transition-colors" />
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••••••"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      required
+                      className="w-full bg-[#0d0d0d] border border-[#333] focus:border-[#c0392b] text-white text-sm pl-10 pr-10 py-3 outline-none transition-colors font-share-tech"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(v => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8a8a] hover:text-[#c0392b] transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#c0392b] hover:bg-[#a85050] text-white font-share-tech uppercase tracking-widest py-3 flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                >
+                  {loading ? (
+                    "Authenticating..."
+                  ) : (
+                    <>Initialize <ArrowRight className="w-4 h-4" /></>
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-6 text-center">
+                <p className="text-xs font-share-tech text-[#8a8a8a] uppercase tracking-widest">
+                  New Operative? <Link href="/register" className="text-[#c0392b] hover:text-[#e74c3c] transition-colors">Register</Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
