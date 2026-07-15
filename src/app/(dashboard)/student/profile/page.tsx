@@ -153,6 +153,41 @@ export default function StudentProfilePage() {
                   <Label htmlFor="linkedin" className="text-[#8a8a8a] uppercase tracking-widest text-xs">LinkedIn Node</Label>
                   <Input id="linkedin" name="linkedin" defaultValue={userProfile.linkedin || ""} placeholder="linkedin.com/in/username" className="cyber-input" />
                 </div>
+                
+                {/* CRI Specific Fields */}
+                <div className="space-y-2 border-t border-[#c0392b]/20 pt-4 col-span-1 md:col-span-2">
+                  <h3 className="text-[#c0392b] uppercase tracking-widest text-sm font-bold">Academic & Competitive (CRI) Metrics</h3>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="program" className="text-[#8a8a8a] uppercase tracking-widest text-xs">Program</Label>
+                  <Input id="program" name="program" defaultValue={userProfile.program || ""} placeholder="e.g. B.Tech" className="cyber-input" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="currentSemester" className="text-[#8a8a8a] uppercase tracking-widest text-xs">Current Semester</Label>
+                  <Input id="currentSemester" name="currentSemester" defaultValue={userProfile.currentSemester || ""} placeholder="e.g. 5" className="cyber-input" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cgpa" className="text-[#8a8a8a] uppercase tracking-widest text-xs">Current CGPA (0-10)</Label>
+                  <Input id="cgpa" name="cgpa" type="number" step="0.01" max="10" defaultValue={userProfile.cgpa || ""} placeholder="e.g. 8.5" className="cyber-input" />
+                </div>
+                <div className="hidden md:block"></div>
+                <div className="space-y-2">
+                  <Label htmlFor="codeforcesHandle" className="text-[#8a8a8a] uppercase tracking-widest text-xs">Codeforces Handle</Label>
+                  <Input id="codeforcesHandle" name="codeforcesHandle" defaultValue={userProfile.codeforcesHandle || ""} className="cyber-input" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="codeforcesRating" className="text-[#8a8a8a] uppercase tracking-widest text-xs">Codeforces Rating</Label>
+                  <Input id="codeforcesRating" name="codeforcesRating" type="number" defaultValue={userProfile.codeforcesRating || ""} className="cyber-input" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="leetcodeUsername" className="text-[#8a8a8a] uppercase tracking-widest text-xs">LeetCode Username</Label>
+                  <Input id="leetcodeUsername" name="leetcodeUsername" defaultValue={userProfile.leetcodeUsername || ""} className="cyber-input" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="leetcodeRating" className="text-[#8a8a8a] uppercase tracking-widest text-xs">LeetCode Contest Rating</Label>
+                  <Input id="leetcodeRating" name="leetcodeRating" type="number" defaultValue={userProfile.leetcodeRating || ""} className="cyber-input" />
+                </div>
+                
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="skills" className="text-[#8a8a8a] uppercase tracking-widest text-xs">Known Vectors (Skills)</Label>
                   <Input id="skills" name="skills" defaultValue={userProfile.skills || ""} placeholder="e.g. Reversing, Web Exploitation, Crypto" className="cyber-input" />
@@ -198,32 +233,32 @@ export default function StudentProfilePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
-              <div className="flex items-center text-sm text-[#d0d0d0]">
-                <Mail className="w-4 h-4 mr-4 text-[#c0392b]" />
-                {userProfile.email}
+              <div className="flex items-start text-sm text-[#d0d0d0]">
+                <Mail className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
+                <span className="break-all">{userProfile.email}</span>
               </div>
-              <div className="flex items-center text-sm text-[#d0d0d0]">
-                <Phone className="w-4 h-4 mr-4 text-[#c0392b]" />
-                {userProfile.mobile || "N/A"}
+              <div className="flex items-start text-sm text-[#d0d0d0]">
+                <Phone className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
+                <span className="break-words">{userProfile.mobile || "N/A"}</span>
               </div>
-              <div className="flex items-center text-sm text-[#d0d0d0]">
-                <Building className="w-4 h-4 mr-4 text-[#c0392b]" />
-                {userProfile.department || "Unknown Dept"}
+              <div className="flex items-start text-sm text-[#d0d0d0]">
+                <Building className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
+                <span className="break-words">{userProfile.department || "Unknown Dept"}</span>
               </div>
-              <div className="flex items-center text-sm text-[#d0d0d0]">
-                <Briefcase className="w-4 h-4 mr-4 text-[#c0392b]" />
-                Batch {userProfile.batch || "N/A"}
+              <div className="flex items-start text-sm text-[#d0d0d0]">
+                <Briefcase className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
+                <span className="break-words">Batch {userProfile.batch || "N/A"}</span>
               </div>
               {userProfile.github && (
-                <div className="flex items-center text-sm text-[#d0d0d0]">
-                  <Code className="w-4 h-4 mr-4 text-[#c0392b]" />
-                  {userProfile.github}
+                <div className="flex items-start text-sm text-[#d0d0d0]">
+                  <Code className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
+                  <span className="break-all">{userProfile.github}</span>
                 </div>
               )}
               {userProfile.linkedin && (
-                <div className="flex items-center text-sm text-[#d0d0d0]">
-                  <Globe className="w-4 h-4 mr-4 text-[#c0392b]" />
-                  {userProfile.linkedin}
+                <div className="flex items-start text-sm text-[#d0d0d0]">
+                  <Globe className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
+                  <span className="break-all">{userProfile.linkedin}</span>
                 </div>
               )}
               
@@ -302,6 +337,28 @@ export default function StudentProfilePage() {
                   </div>
                 </div>
               )}
+              
+              {/* Extended CRI Details */}
+              <div className="mt-8 border-t border-[#c0392b]/20 pt-6">
+                <h3 className="text-[#c0392b] uppercase tracking-widest text-sm font-bold mb-4">Academic & Competitive Metrics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-3 bg-[#0d0d0d] border border-[#c0392b]/40">
+                    <span className="text-[#8a8a8a] text-xs uppercase tracking-widest block mb-1">Academic Standing</span>
+                    <div className="text-[#f0f0f0] text-sm">
+                      Program: <span className="text-[#c0392b]">{userProfile.program || "UNREGISTERED"}</span><br />
+                      Semester: <span className="text-[#c0392b]">{userProfile.currentSemester || "UNREGISTERED"}</span><br />
+                      CGPA: <span className="text-[#c0392b] font-bold">{userProfile.cgpa || "UNREGISTERED"}</span>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-[#0d0d0d] border border-[#c0392b]/40">
+                    <span className="text-[#8a8a8a] text-xs uppercase tracking-widest block mb-1">Competitive Coding Profile</span>
+                    <div className="text-[#f0f0f0] text-sm">
+                      Codeforces: <span className="text-[#c0392b]">{userProfile.codeforcesHandle || "UNREGISTERED"}</span> (Rating: {userProfile.codeforcesRating || "N/A"})<br />
+                      LeetCode: <span className="text-[#c0392b]">{userProfile.leetcodeUsername || "UNREGISTERED"}</span> (Rating: {userProfile.leetcodeRating || "N/A"})
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
