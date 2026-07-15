@@ -51,30 +51,34 @@ export async function getDepartmentStats() {
   }
 }
 
-export async function getStudentStats(studentId: string) {
-  try {
-    const approvedAchievements = await prisma.achievement.findMany({
-      where: { 
-        status: "APPROVED",
-        studentId: studentId 
+  export async function getStudentStats(studentId: string) {
+    try {
+      const allAchievements = await prisma.achievement.findMany({
+        where: { 
+          studentId: studentId 
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      });
+  
+      const approvedAchievements = allAchievements.filter(a => a.status === "APPROVED");
+      const total = approvedAchievements.length;
+      const categoryStats: Record<string, number> = {};
+  
+      for (const ach of approvedAchievements) {
+        const cat = ach.category || "Uncategorized";
+        categoryStats[cat] = (categoryStats[cat] || 0) + 1;
       }
-    });
-
-    const total = approvedAchievements.length;
-    const categoryStats: Record<string, number> = {};
-
-    for (const ach of approvedAchievements) {
-      const cat = ach.category || "Uncategorized";
-      categoryStats[cat] = (categoryStats[cat] || 0) + 1;
-    }
-
-    return {
-      success: true,
-      stats: {
-        total,
-        byCategory: categoryStats
-      }
-    };
+  
+      return {
+        success: true,
+        stats: {
+          total,
+          byCategory: categoryStats
+        },
+        achievements: allAchievements
+      };
   } catch (err) {
     console.error("Failed to fetch student stats", err);
     return { error: "Failed to fetch stats" };
