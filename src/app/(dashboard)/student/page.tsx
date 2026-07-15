@@ -7,6 +7,14 @@ import { getStudentStats } from "@/app/actions/statistics";
 import { useState, useEffect } from "react";
 import { Target, Loader2, Award, Zap, Trophy, Clock, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 
 export default function StudentDashboard() {
@@ -160,9 +168,61 @@ export default function StudentDashboard() {
                     {new Date(ach.startDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                   </span>
                   
-                  <button className="text-cyan-500 hover:text-cyan-400 font-semibold flex items-center gap-1 transition-colors opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 cursor-pointer">
-                    View Details
-                  </button>
+                  <Dialog>
+                    <DialogTrigger 
+                      render={
+                        <button className="text-cyan-500 hover:text-cyan-400 font-semibold flex items-center gap-1 transition-colors opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 cursor-pointer">
+                          View Details
+                        </button>
+                      }
+                    />
+                    <DialogContent className="sm:max-w-[425px] bg-slate-950 border-slate-800 text-white">
+                      <DialogHeader>
+                        <DialogTitle>{ach.title}</DialogTitle>
+                        <DialogDescription className="text-slate-400">
+                          Submitted on {new Date(ach.startDate).toLocaleDateString()}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <span className="text-sm font-medium text-slate-500">Category</span>
+                          <span className="text-sm text-slate-200">{ach.category}</span>
+                        </div>
+                        <div className="grid gap-2">
+                          <span className="text-sm font-medium text-slate-500">Organizer</span>
+                          <span className="text-sm text-slate-200">{ach.organizer}</span>
+                        </div>
+                        <div className="grid gap-2">
+                          <span className="text-sm font-medium text-slate-500">Description</span>
+                          <span className="text-sm text-slate-200">{ach.description || "No description provided."}</span>
+                        </div>
+                        {ach.evidenceUrl && (
+                          <div className="grid gap-2">
+                            <span className="text-sm font-medium text-slate-500">Evidence Link</span>
+                            <a href={ach.evidenceUrl} target="_blank" rel="noreferrer" className="text-cyan-500 hover:underline text-sm truncate">
+                              {ach.evidenceUrl}
+                            </a>
+                          </div>
+                        )}
+                        <div className="grid gap-2">
+                          <span className="text-sm font-medium text-slate-500">Status</span>
+                          <span className={`text-sm font-bold uppercase tracking-wider ${
+                            ach.status === 'APPROVED' ? 'text-emerald-400' : 
+                            ach.status === 'REJECTED' ? 'text-red-400' : 
+                            'text-amber-400'
+                          }`}>
+                            {ach.status}
+                          </span>
+                        </div>
+                        {ach.rejectionReason && (
+                          <div className="grid gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-md">
+                            <span className="text-sm font-medium text-red-400">Rejection Reason</span>
+                            <span className="text-sm text-red-300">{ach.rejectionReason}</span>
+                          </div>
+                        )}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             ))}
