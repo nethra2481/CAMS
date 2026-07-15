@@ -87,20 +87,23 @@ export default function StudentDashboard() {
           </CardHeader>
           <CardContent>
             {achievements.length > 0 ? (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {achievements.map((ach) => (
-                  <div key={ach.id} className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div key={ach.id} className="p-5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col gap-4 justify-between">
                     <div>
-                      <h4 className="font-semibold text-slate-200">{ach.title}</h4>
-                      <p className="text-sm text-slate-400 mt-1">{ach.organizer} • {new Date(ach.startDate).toLocaleDateString()}</p>
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="px-2.5 py-0.5 bg-slate-800 text-slate-300 text-[10px] uppercase font-bold tracking-wider rounded border border-slate-700 shrink-0">
+                          {ach.category}
+                        </span>
+                        <span className={`px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded border shrink-0 ${ach.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : ach.status === 'REJECTED' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
+                          {ach.status}
+                        </span>
+                      </div>
+                      <h4 className="font-semibold text-slate-200 text-lg leading-tight mt-3">{ach.title}</h4>
+                      <p className="text-sm text-slate-400 mt-2">{ach.organizer}</p>
                     </div>
-                    <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
-                      <span className="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-medium rounded-full border border-slate-700 shrink-0">
-                        {ach.category}
-                      </span>
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full border shrink-0 ${ach.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : ach.status === 'REJECTED' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
-                        {ach.status}
-                      </span>
+                    <div className="text-xs text-slate-500 font-medium">
+                      {new Date(ach.startDate).toLocaleDateString()}
                     </div>
                   </div>
                 ))}
