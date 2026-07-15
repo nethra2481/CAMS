@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ShieldAlert, Terminal, Lock } from 'lucide-react';
+import { Terminal, Lock } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -116,7 +116,6 @@ export default function Home() {
 
               {/* Orbital Logo & Title */}
               <div className="hidden sm:flex items-center gap-3">
-                <ShieldAlert className="w-8 h-8 text-[#c0392b]" />
                 <h1 className="font-press-start text-xs tracking-wider mt-1 text-[#f0f0f0]">
                   CAMS <span className="text-[#c0392b]">PORTAL</span>
                 </h1>
