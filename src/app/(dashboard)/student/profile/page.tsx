@@ -252,13 +252,27 @@ export default function StudentProfilePage() {
               {userProfile.github && (
                 <div className="flex items-start text-sm text-[#d0d0d0]">
                   <Code className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
-                  <span className="break-all">{userProfile.github}</span>
+                  <a 
+                    href={userProfile.github.startsWith('http') ? userProfile.github : `https://${userProfile.github}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="break-all hover:text-[#c0392b] hover:underline transition-colors"
+                  >
+                    {userProfile.github}
+                  </a>
                 </div>
               )}
               {userProfile.linkedin && (
                 <div className="flex items-start text-sm text-[#d0d0d0]">
                   <Globe className="w-4 h-4 mr-4 text-[#c0392b] shrink-0 mt-0.5" />
-                  <span className="break-all">{userProfile.linkedin}</span>
+                  <a 
+                    href={userProfile.linkedin.startsWith('http') ? userProfile.linkedin : `https://${userProfile.linkedin}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="break-all hover:text-[#c0392b] hover:underline transition-colors"
+                  >
+                    {userProfile.linkedin}
+                  </a>
                 </div>
               )}
               
