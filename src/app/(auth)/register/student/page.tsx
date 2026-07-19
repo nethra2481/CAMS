@@ -104,15 +104,7 @@ export default function RegisterPage() {
                   </button>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="department" className="text-slate-300">Department</Label>
-                <select id="department" name="department" required className="flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/50 px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
-                  <option value="Cyber Security">Cyber Security</option>
-                  <option value="Computer Science">Computer Science</option>
-                  <option value="AI & ML">AI & ML</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+
 
               <div className="space-y-2">
                 <Label htmlFor="year" className="text-slate-300">Year</Label>

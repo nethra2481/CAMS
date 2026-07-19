@@ -8,7 +8,7 @@ export async function registerStudent(formData: FormData) {
   const email = formData.get("email") as string;
   const name = formData.get("name") as string;
   const password = formData.get("password") as string;
-  const department = formData.get("department") as string;
+  const department = "Cyber Security";
   const year = formData.get("year") as string;
   const section = formData.get("section") as string;
 
@@ -48,6 +48,50 @@ export async function registerStudent(formData: FormData) {
         year: year || null,
         section: section || null,
         registerNumber
+      }
+    });
+
+    return { success: true };
+  } catch (err) {
+    console.error("Registration error:", err);
+    return { error: "Internal server error during registration." };
+  }
+}
+
+export async function registerFaculty(formData: FormData) {
+  const email = formData.get("email") as string;
+  const name = formData.get("name") as string;
+  const password = formData.get("password") as string;
+  const department = "Cyber Security";
+
+  if (!email || !name || !password) {
+    return { error: "All required fields must be filled out." };
+  }
+
+  // Validate Email Domain
+  const emailRegex = /^[a-zA-Z0-9._-]+@(cb\.)?amrita\.edu$/;
+  if (!emailRegex.test(email)) {
+    return { error: "Invalid email domain. Must be @cb.amrita.edu or @amrita.edu" };
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email }
+  });
+
+  if (existingUser) {
+    return { error: "An account with this email already exists." };
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  try {
+    await prisma.user.create({
+      data: {
+        email,
+        name,
+        passwordHash,
+        role: "FACULTY",
+        department
       }
     });
 
