@@ -322,7 +322,7 @@ export default function LoginPage() {
 
               <div className="mt-6 text-center">
                 <p className="text-xs font-share-tech text-[#8a8a8a] uppercase tracking-widest">
-                  New Operative? <Link href="/register" className="transition-colors hover-text-highlight" style={{ color: primaryColor }}>Register</Link>
+                  New Operative? <Link href={role === "faculty" ? "/register/faculty" : "/register/student"} className="transition-colors hover-text-highlight" style={{ color: primaryColor }}>Register</Link>
                 </p>
                 <style>{`.hover-text-highlight:hover { color: ${primaryHighlight} !important; }`}</style>
               </div>
